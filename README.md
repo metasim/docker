@@ -1,35 +1,30 @@
-# Official Jenkins Docker image
+# Renkins
 
-The Jenkins Continuous Integration and Delivery server.
+*Fork of the official Jenkins Docker image based on `rocker/hadleyverse`*
 
-This is a fully functional Jenkins server, based on the Long Term Support release
-http://jenkins-ci.org/
-
-
-<img src="http://jenkins-ci.org/sites/default/files/jenkins_logo.png"/>
-
+The Jenkins Continuous Integration and Delivery server, with R support.
 
 # Usage
 
 ```
-docker run -p 8080:8080 -p 50000:50000 jenkins
+docker run -p 8080:8080 -p 50000:50000 renkins
 ```
 
 This will store the workspace in /var/jenkins_home. All Jenkins data lives in there - including plugins and configuration.
 You will probably want to make that a persistent volume (recommended):
 
 ```
-docker run -p 8080:8080 -p 50000:50000 -v /your/home:/var/jenkins_home jenkins
+docker run -p 8080:8080 -p 50000:50000 -v /your/home:/var/jenkins_home renkins
 ```
 
 This will store the jenkins data in `/your/home` on the host.
-Ensure that `/your/home` is accessible by the jenkins user in container (jenkins user - uid 1000) or use `-u some_other_user` parameter with `docker run`.
+Ensure that `/your/home` is accessible by the jenkins user in container (jenkins user - uid 2000) or use `-u some_other_user` parameter with `docker run`.
 
 
 You can also use a volume container:
 
 ```
-docker run --name myjenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home jenkins
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home renkins
 ```
 
 Then myjenkins container has the volume (please do read about docker volume handling to find out more).
@@ -75,7 +70,7 @@ You might need to customize the JVM running Jenkins, typically to pass system pr
 variable for this purpose :
 
 ```
-docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS=-Dhudson.footerURL=http://mycompany.com jenkins
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS=-Dhudson.footerURL=http://mycompany.com renkins
 ```
 
 # Configuring logging
@@ -90,7 +85,7 @@ handlers=java.util.logging.ConsoleHandler
 jenkins.level=FINEST
 java.util.logging.ConsoleHandler.level=FINEST
 EOF
-docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS="-Djava.util.logging.config.file=/var/jenkins_home/log.properties" -v `pwd`/data:/var/jenkins_home jenkins
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS="-Djava.util.logging.config.file=/var/jenkins_home/log.properties" -v `pwd`/data:/var/jenkins_home renkins
 ```
 
 
@@ -98,7 +93,7 @@ docker run --name myjenkins -p 8080:8080 -p 50000:50000 --env JAVA_OPTS="-Djava.
 
 Argument you pass to docker running the jenkins image are passed to jenkins launcher, so you can run for sample :
 ```
-docker run jenkins --version
+docker run renkins --version
 ```
 This will dump Jenkins version, just like when you run jenkins as an executable war.
 
@@ -123,7 +118,7 @@ ENV JENKINS_SLAVE_AGENT_PORT 50001
 ```
 or as a parameter to docker,
 ```
-docker run --name myjenkins -p 8080:8080 -p 50001:50001 --env JENKINS_SLAVE_AGENT_PORT=50001 jenkins
+docker run --name myjenkins -p 8080:8080 -p 50001:50001 --env JENKINS_SLAVE_AGENT_PORT=50001 renkins
 ```
 
 # Installing more tools
@@ -131,7 +126,7 @@ docker run --name myjenkins -p 8080:8080 -p 50001:50001 --env JENKINS_SLAVE_AGEN
 You can run your container as root - and install via apt-get, install as part of build steps via jenkins tool installers, or you can create your own Dockerfile to customise, for example: 
 
 ```
-FROM jenkins
+FROM renkins
 # if we want to install via apt
 USER root
 RUN apt-get update && apt-get install -y ruby make more-thing-here
@@ -143,7 +138,7 @@ For this purpose, use `/usr/share/jenkins/ref` as a place to define the default 
 wish the target installation to look like :
 
 ```
-FROM jenkins
+FROM renkins
 COPY plugins.txt /usr/share/jenkins/ref/
 COPY custom.groovy /usr/share/jenkins/ref/init.groovy.d/custom.groovy
 RUN /usr/local/bin/plugins.sh /usr/share/jenkins/ref/plugins.txt
@@ -160,11 +155,10 @@ anotherPluginID:version
 ```
 And in derived Dockerfile just invoke the utility plugin.sh script
 ```
-FROM jenkins
+FROM renkins
 COPY plugins.txt /usr/share/jenkins/plugins.txt
 RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
 ```
-
 
 # Upgrading
 
@@ -172,6 +166,3 @@ All the data needed is in the /var/jenkins_home directory - so depending on how 
 
 As always - please ensure that you know how to drive docker - especially volume handling!
 
-# Questions?
-
-Jump on irc.freenode.net and the #jenkins room. Ask!
