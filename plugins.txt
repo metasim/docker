@@ -1,5 +1,7 @@
 r:0.2
 git:2.3.5
+scm-api:0.2
+git-client:1.16.1
 git-server:1.4
 git-userContent:1.4
 mailer:1.15
