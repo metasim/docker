@@ -1,3 +1,4 @@
+xshell:0.10
 r:0.2
 git:2.3.5
 scm-api:0.2
