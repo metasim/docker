@@ -1,5 +1,5 @@
 xshell:0.10
-r:0.2
+envinject:1.92.1
 git:2.3.5
 scm-api:0.2
 git-client:1.16.1
